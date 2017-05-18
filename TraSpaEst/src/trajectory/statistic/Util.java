@@ -22,8 +22,9 @@ public class Util {
     public static final int HOUR = 24;
 	
 	/* compare the accessed nodes in two trajectory sets with histograms */
-	public static double featureStatistics(ArrayList<Trajectory> trajectoryListA, 
-			ArrayList<Trajectory> trajectoryListB, String option){
+	public static double featureStatistics(ArrayList<Trajectory> 
+			trajectoryListA, ArrayList<Trajectory> trajectoryListB, String option){
+		
 		double histDistance = 0.0;
 		
 		HashMap<Long, Integer> statNodeA = new HashMap<Long, Integer>();
@@ -93,6 +94,7 @@ public class Util {
 		setHistByHashMap(statNodeB, unionNode, histB);
 		
 		histDistance = histA.distanceHistogram(histB);
+
 		return histDistance;
 	}
 	
@@ -212,49 +214,44 @@ public class Util {
 	
 	
 	/* get clipping trajectory set with given origin and destination points */
-	public static ArrayList<Trajectory> get_ClipSet(long originPointId, 
-			long destinationPointId, ArrayList<Trajectory> trajectoryList, 
-			ArrayList<InvertedList> invertedIndex){
+	public static void get_ClipSet(ArrayList<Trajectory> trajectoryClipList, 
+			int originPointId, int destinationPointId, ArrayList<Trajectory> 
+			trajectoryList, ArrayList<InvertedList> invertedIndex){
 		
-		ArrayList<Trajectory> trajectoryODList = new ArrayList<Trajectory>();
 		
 		/* get the intersection trajectory from two inverted lists */
-		ArrayList<Point> intersectionTrajectory = intersectionTrajectory(originPointId, 
+		ArrayList<Point> intersectionTrajectory = new ArrayList<Point>();
+		intersectionTrajectory(intersectionTrajectory, originPointId, 
 				destinationPointId, invertedIndex);
 		
 		/* extract the sub-trajectories from trajectory list */
-		trajectoryODList = extractSubTrajectoryClipList(intersectionTrajectory, 
+		extractSubTrajectoryClipList(trajectoryClipList, intersectionTrajectory, 
 				trajectoryList);
 		
-		return trajectoryODList;
 		
 	}
 	
 	/* get origin-destination trajectory set with given origin and destination points */
-	public static ArrayList<Trajectory> get_OriginDestinationSet(long originPointId, 
-			long destinationPointId, ArrayList<Trajectory> trajectoryList, 
-			ArrayList<InvertedList> invertedIndex){
-		
-		ArrayList<Trajectory> trajectoryODList = new ArrayList<Trajectory>();
+	public static void  get_OriginDestinationSet(ArrayList<Trajectory> trajectoryODList,
+			int originPointId, int destinationPointId, ArrayList<Trajectory> 
+			trajectoryList, ArrayList<InvertedList> invertedIndex){
 		
 		/* get the intersection trajectory from two inverted lists */
-		ArrayList<Point> intersectionTrajectory = intersectionTrajectory(originPointId, 
+		ArrayList<Point> intersectionTrajectory = new ArrayList<Point>();
+		intersectionTrajectory(intersectionTrajectory, originPointId, 
 				destinationPointId, invertedIndex);
 		
 		/* extract the sub-trajectories from trajectory list */
-		trajectoryODList = extractSubTrajectoryODList(intersectionTrajectory, 
+		extractSubTrajectoryODList(trajectoryODList, intersectionTrajectory, 
 				trajectoryList);
-		
-		return trajectoryODList;
 		
 	}
 	
 	/* extract a sub-trajectory list with given intersection trajectory list 
 	 * this sub-trajectory is a set of clipping trajectories*/
-	public static ArrayList<Trajectory> extractSubTrajectoryClipList(ArrayList<Point> 
-			intersectionTrajectory, ArrayList<Trajectory> trajectoryList){
-		
-		ArrayList<Trajectory> subTrajectoryList = new ArrayList<Trajectory>();
+	public static void  extractSubTrajectoryClipList(ArrayList<Trajectory> 
+			subTrajectoryList, ArrayList<Point> intersectionTrajectory, 
+			ArrayList<Trajectory> trajectoryList){
 		
 		/* FIXME: by now the trajectory id is the same as
 		 *  the index in the trajectory list*/
@@ -298,15 +295,13 @@ public class Util {
 			}
 		}
 		
-		return subTrajectoryList;
 	}
 	
 	/* extract a sub-trajectory list with given intersection trajectory list 
 	 * this sub-trajectory is a set of origin-destination trajectories*/
-	public static ArrayList<Trajectory> extractSubTrajectoryODList(ArrayList<Point> 
-			intersectionTrajectory, ArrayList<Trajectory> trajectoryList){
-		
-		ArrayList<Trajectory> subTrajectoryList = new ArrayList<Trajectory>();
+	public static void extractSubTrajectoryODList(ArrayList<Trajectory> 
+			subTrajectoryList, ArrayList<Point> intersectionTrajectory, 
+			ArrayList<Trajectory> trajectoryList){
 		
 		/* FIXME: by now the trajectory id is the same as
 		 *  the index in the trajectory list*/
@@ -333,15 +328,12 @@ public class Util {
 			}
 		}
 		
-		return subTrajectoryList;
 	}
 	
 	/* extract a sub-trajectory list with given intersection trajectory list 
 	 * this sub-trajectory does not concern whether a sub-trajectory is od or clipping*/
-	public static ArrayList<Trajectory> extractSubTrajectoryList(ArrayList<Point> 
-			intersectionTrajectory, ArrayList<Trajectory> trajectoryList){
-		
-		ArrayList<Trajectory> subTrajectoryList = new ArrayList<Trajectory>();
+	public static void extractSubTrajectoryList(ArrayList<Trajectory> subTrajectoryList, 
+			ArrayList<Point> intersectionTrajectory, ArrayList<Trajectory> trajectoryList){
 		
 		/* FIXME: by now the trajectory id is the same as
 		 *  the index in the trajectory list*/
@@ -365,16 +357,13 @@ public class Util {
 			subTrajectoryList.add(subTrajectory);
 		}
 		
-		return subTrajectoryList;
 	}
 	
 	
 	
 	/* build the trajectory list by reading trajectory file */
-	public static ArrayList<Trajectory> buildTrajectoryList(String trajectoryFile, int pointDimension)
-			throws FileNotFoundException{
-		
-		ArrayList<Trajectory> trajectoryList = new ArrayList<Trajectory>();
+	public static void buildTrajectoryList(ArrayList<Trajectory> trajectoryList, 
+			String trajectoryFile, int pointDimension) throws FileNotFoundException{
 		
 		FileInputStream inputStreamTrajectoryList = new FileInputStream(trajectoryFile);
 		
@@ -412,15 +401,12 @@ public class Util {
             /* add the trajectory into the trajectory list */
             trajectoryList.add(trajectoryItem);            
         }
-		
-		return trajectoryList;
+
 	}
 	
 	/* build the inverted index by reading the inverted-index file */
-	public static ArrayList<InvertedList> buildInvertedIndex(String invertedIndexFile)
-			throws FileNotFoundException {
-		
-		ArrayList<InvertedList> invertedIndex = new ArrayList<InvertedList>();
+	public static void buildInvertedIndex(ArrayList<InvertedList> invertedIndex, 
+			String invertedIndexFile) throws FileNotFoundException {
 		
         FileInputStream inputStreamInvertedIndex = 
         		new FileInputStream(invertedIndexFile);
@@ -460,28 +446,26 @@ public class Util {
             /* add the inverted list into the inverted index */
             invertedIndex.add(invertedlistItem);
         }
-		
-		return invertedIndex;
+
 	}
 	
 	/* get intersection trajectory with two point ids */
-	public static ArrayList<Point> intersectionTrajectory(long originPointId, 
-			long destinationPointId, ArrayList<InvertedList> invertedIndex){
-		
-		ArrayList<Point> intersectionList = new ArrayList<Point>();
+	public static void intersectionTrajectory(ArrayList<Point> intersectionList, 
+			long originPointId, long destinationPointId, 
+			ArrayList<InvertedList> invertedIndex){
 		
 		/* FIXME: at this stage, the point id is the same
 		 * as the point index */
-		ArrayList<Point> originList = invertedIndex.get((int)originPointId)
-				.get_trajectoryArray();
+		ArrayList<Point> originList = new ArrayList<Point>();
+		originList = invertedIndex.get((int)originPointId).get_trajectoryArray();
 		
-		ArrayList<Point> destinationList = invertedIndex.get((int)destinationPointId)
+		ArrayList<Point> destinationList = new ArrayList<Point>();
+		destinationList = invertedIndex.get((int)destinationPointId)
 				.get_trajectoryArray();
 		
 		/* get intersection by two inverted lists */
-		intersectionList = intersectionTrajectory(originList, destinationList);
-		
-		return intersectionList;
+		intersectionTrajectory(intersectionList, originList, destinationList);
+
 	}	
 	
 	/* get intersection trajectories with two inverted lists 
@@ -489,10 +473,8 @@ public class Util {
 	 * Point: trajectoryId, position
 	 * the element in the result intersection list is as follow
 	 * Point: trajectoryId, start position, end position */
-    public static ArrayList<Point> intersectionTrajectory(ArrayList<Point> originList,
-    		ArrayList<Point> destinationList) {
-        
-    	ArrayList<Point> intersectionList = new ArrayList<Point>();
+    public static void intersectionTrajectory(ArrayList<Point> intersectionList, 
+    		ArrayList<Point> originList, ArrayList<Point> destinationList) {
     	
         int originLength = originList.size();
         int destinationLength = destinationList.size();
@@ -501,7 +483,7 @@ public class Util {
         if (originLength == 0 || destinationLength == 0){
         	System.out.println("Warning: [Util::intersectionTrajectory()] "
         			+ "At least one of the given lists is null!");
-            return intersectionList;
+        	return;
         }
         
         /* check whether there is intersection by comparing the starting and ending */
@@ -511,7 +493,7 @@ public class Util {
                 < originList.get(0).get_coordinate(0)){
         	System.out.println("Warning: [Util::intersectionTrajectory()] "
         			+ "There is no intersection!");
-        	return intersectionList;
+        	return;
         }
         
         int originIndex = 0;
@@ -568,8 +550,7 @@ public class Util {
                 destinationIndex++;
             }
         }
-        
-        return intersectionList;       
+              
     }
 
 }

@@ -47,4 +47,14 @@ public class Point {
 	public void set_coordinate(int nth, long value) {
 		this.coordinate[nth] = value;
 	}
+	
+	/* compare two points equals or not */
+	public boolean equals (Point point){
+		for (int i = 0; i < nDimensions; i++){
+			if(this.get_coordinate(i) != point.get_coordinate(i)){
+				return false;
+			}
+		}
+		return true;
+	}
 }

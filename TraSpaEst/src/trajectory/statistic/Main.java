@@ -9,8 +9,9 @@ public class Main {
 		
 		System.out.print("***** Start the procedure with the construction of trajectory list! *****\n");
         long startTime = System.currentTimeMillis();
-        
-        ArrayList<Trajectory> trajectoryList = Util.buildTrajectoryList("/media/dragon_data/uqdhe/"
+            
+        ArrayList<Trajectory> trajectoryList = new ArrayList<Trajectory>();
+        Util.buildTrajectoryList(trajectoryList, "/media/dragon_data/uqdhe/"
         		+ "BeijingFiveDays/mydata/beijingTrajectory-newnodesequence", 2);
         
         long endTime   = System.currentTimeMillis();
@@ -19,7 +20,8 @@ public class Main {
         System.out.print("***** Finish the construction of trajectory list and start the construction"
         		+ " of inverted list! *****\n"); 
         
-        ArrayList<InvertedList> invertedIndex = Util.buildInvertedIndex("/media/dragon_data/uqdhe/"
+        ArrayList<InvertedList> invertedIndex = new ArrayList<InvertedList>();
+        Util.buildInvertedIndex(invertedIndex, "/media/dragon_data/uqdhe/"
         		+ "BeijingFiveDays/mydata/invertedindex");
         
         endTime   = System.currentTimeMillis();
@@ -31,22 +33,23 @@ public class Main {
         int originPointId = 258144;
         int destinationPointId = 255392;
         
-        ArrayList<Trajectory> trajectoryListOD = 
-        		Util.get_OriginDestinationSet(originPointId, destinationPointId, 
+        ArrayList<Trajectory> trajectoryListOD = new ArrayList<Trajectory>();
+        Util.get_OriginDestinationSet(trajectoryListOD, originPointId, destinationPointId, 
         				trajectoryList, invertedIndex);
         
         System.out.println("The number of OD trajectories is : " + trajectoryListOD.size());
         
-        ArrayList<Trajectory> trajectoryListClip = 
-        		Util.get_ClipSet(originPointId, destinationPointId, 
+        ArrayList<Trajectory> trajectoryListClip = new ArrayList<Trajectory>();
+        Util.get_ClipSet(trajectoryListClip, originPointId, destinationPointId, 
         				trajectoryList, invertedIndex);
         
         System.out.println("The number of Clipping trajectories is : " + trajectoryListClip.size());
         
-        double distance = Util.featureStatistics(trajectoryListOD, trajectoryListClip, "timePeriod");
+        double distance = 0.0;
+        distance = Util.featureStatistics(trajectoryListOD, trajectoryListClip, "timePeriod");
         
         System.out.println("the test distance = " + distance + "\n");
-	
+
 	}
 
 }
