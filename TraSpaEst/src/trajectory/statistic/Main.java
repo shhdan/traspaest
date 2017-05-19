@@ -45,11 +45,11 @@ public class Main {
         
         double distance = 0.0;
         
-        distance = Util.calculateClipHist(originPointId, destinationPointId, "timePeriod");
+        distance = Util.calculateClipHist(originPointId, destinationPointId, "node");
   
         System.out.println("the test od and clipping distance = " + distance + "\n");
         
-        distance = Util.calculateConcatenateHist(originPointId, destinationPointId, 1, "timePeriod");
+        distance = Util.calculateConcatenateHist(originPointId, destinationPointId, 1, "node");
         
         System.out.println("the test od and concatenation distance = " + distance + "\n");
 

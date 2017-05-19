@@ -615,6 +615,7 @@ public class Util {
 	public static void getPathEnum(int k, int currentPointId, int destinationPointId,
 			ArrayList<Integer> pathEnum, ArrayList<ArrayList<Integer>> result) {
 		
+		/* get the connected list of current point, which stores all the neighbors of it */
 		ArrayList<Integer> neighborList = connectedList.get(currentPointId);
 		if (k == 0) {
 			if (neighborList.contains(destinationPointId)) {
@@ -622,8 +623,8 @@ public class Util {
 				
 				/* check whether there is loop in the permutation */
 				HashSet<Integer> pathSet = new HashSet<Integer>();
-				for(Integer elem : pathEnum){
-					pathSet.add(elem);
+				for(Integer elemSet : pathEnum){
+					pathSet.add(elemSet);
 				}
 				
 				if(pathSet.size() == pathEnum.size())
@@ -635,8 +636,17 @@ public class Util {
 		for (Integer elem : neighborList) {
 			/* new a new path to add the current point into the path */
 			ArrayList<Integer> newPath = new ArrayList<Integer>(pathEnum);
-			newPath.add(elem);
-			getPathEnum(k-1, elem, destinationPointId, newPath, result);
+			newPath.add(elem);			
+			
+			/* check whether there is loop in the permutation; 
+			 * if there is a loop, then there is no need to continue the recursion*/
+			HashSet<Integer> pathSet = new HashSet<Integer>();
+			for(Integer elemSet : newPath){
+				pathSet.add(elemSet);
+			}
+			
+			if(pathSet.size() == newPath.size())
+				getPathEnum(k-1, elem, destinationPointId, newPath, result);
 		
 		}
 	}
