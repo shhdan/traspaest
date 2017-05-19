@@ -3,6 +3,7 @@ package trajectory.statistic;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Scanner;
 //import java.util.Stack;
 
@@ -33,21 +34,6 @@ public class ConcatenateUtil {
             String[] lineData = lineConnectedList.split(SplitBy);
             ArrayList<Integer> pointList = new ArrayList<Integer>();
             
-/*             scan the element of a line 
-            for(int columnIndex = 1; columnIndex < lineData.length; columnIndex++){
-            	 if the element is larger than the threshold 
-            	 * then keep the point ID in the list, and put this
-            	 * pair of point IDs into a hash set 
-            	if(Integer.parseInt(lineData[columnIndex]) >= NUM_OF_TRAJECTORY){
-            		 add the point pair to the hash set 
-            		Point pair = new Point();
-            		pair.set_coordinate(0, lineIndex);
-            		pair.set_coordinate(1, columnIndex);
-            		pointSet.add(pair);
-            		 add the point index to the list 
-            		pointList.add(columnIndex);
-            	}
-            }*/
             /* scan the element of a line */
             for(int columnIndex = 0; columnIndex < lineData.length; columnIndex++){           	
             	/* add the point index to the list */
@@ -59,14 +45,22 @@ public class ConcatenateUtil {
         }		
 	}
 	
-	private static void getPathEnum(int k, int currentPointId, int destinationPointId,
+	public static void getPathEnum(int k, int currentPointId, int destinationPointId,
 			ArrayList<Integer> pathEnum, ArrayList<ArrayList<Integer>> result) {
 		
 		ArrayList<Integer> neighborList = connectedList.get(currentPointId);
 		if (k == 0) {
 			if (neighborList.contains(destinationPointId)) {
 				pathEnum.add(destinationPointId);
-				result.add(pathEnum);
+				
+				/* check whether there is loop in the permutation */
+				HashSet<Integer> pathSet = new HashSet<Integer>();
+				for(Integer elem : pathEnum){
+					pathSet.add(elem);
+				}
+				
+				if(pathSet.size() == pathEnum.size())
+					result.add(pathEnum);
 			}
 			return;
 		}
@@ -79,9 +73,7 @@ public class ConcatenateUtil {
 	}
 	
 	
-
-	
-/*	public static void main(String[] args) {
+	public static void main(String[] args) {
 		FileInputStream inputStreamTrajectoryList;
 		connectedList = new ArrayList<>();
 		try {
@@ -93,13 +85,13 @@ public class ConcatenateUtil {
 	        
 	        while (scTrajectoryList.hasNextLine()) {
 	        	
-	        	 scan a line 
+	        	// scan a line 
 	            lineTrajectoryList = scTrajectoryList.nextLine();
 	            
-	             split a line into items, store into an array 
+	            // split a line into items, store into an array 
 	            String[] lineData = lineTrajectoryList.split(SplitBy);
 	            
-	             new a trajectory 
+	            // new a trajectory 
 	            ArrayList<Integer> list = new ArrayList<>();
 	            for (String s:lineData) {
 	            	int i = Integer.parseInt(s);
@@ -109,11 +101,11 @@ public class ConcatenateUtil {
 	        }
 	        
 	        ArrayList<ArrayList<Integer>> result = new ArrayList<>();
-	        ArrayList<Integer> path = new ArrayList();
+	        ArrayList<Integer> path = new ArrayList<Integer>();
 	        int start=2;
 	        int dest=4;
 	        path.add(start);
-	        findPath(3, start, path, dest, result);
+	        getPathEnum(3, start, dest, path, result);
 	        for (ArrayList<Integer> list: result) {
 	        	for (Integer i : list) {
 	        		System.out.print(i+",");
@@ -126,5 +118,5 @@ public class ConcatenateUtil {
 			e.printStackTrace();
 		}
 		 
-	}*/
+	}
 }

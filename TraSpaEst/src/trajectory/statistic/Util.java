@@ -20,6 +20,26 @@ public class Util {
     public static final int SECOND = 60;
     public static final int MINUTE = 60;
     public static final int HOUR = 24;
+    public static ArrayList<Trajectory> trajectoryList;
+    public static ArrayList<InvertedList> invertedIndex;
+	public static ArrayList<ArrayList<Integer>> connectedList;
+	
+	/* calculate the distance between the od trajectories set and the clipping trajectory set */
+	public static double calculateClipHist(int originPoint, int destinationPoint, String option){
+		double distance = 0.0;
+		
+		/* get the origin-destination trajectories set */
+		ArrayList<Trajectory> trajectoryListOD = new ArrayList<Trajectory>();
+        get_OriginDestinationSet(trajectoryListOD, originPoint, destinationPoint);
+        
+        /* get the clipping trajectories set */
+        ArrayList<Trajectory> trajectoryListClip = new ArrayList<Trajectory>();
+        get_ClipSet(trajectoryListClip, originPoint, destinationPoint);
+        
+        distance = featureStatistics(trajectoryListOD, trajectoryListClip, option);
+		
+		return distance;
+	}
 	
 	/* compare the accessed nodes in two trajectory sets with histograms */
 	public static double featureStatistics(ArrayList<Trajectory> 
@@ -131,12 +151,12 @@ public class Util {
 	
 	/* set the hash map for a trajectory list, the key is the nDimension
 	 * field in a point of trajectory; the key can be the node or the time */
-	public static void setHaspMapTrajectoryListByPoint(ArrayList<Trajectory> trajectoryList,
-			HashMap<Long, Integer> hashMap){
+	public static void setHaspMapTrajectoryListByPoint(ArrayList<Trajectory> 
+			trajectorySet, HashMap<Long, Integer> hashMap){
 		
-		for(int index = 0; index < trajectoryList.size(); index++){
+		for(int index = 0; index < trajectorySet.size(); index++){
 			/* get the trajectory */
-			ArrayList<Point> trajectory = trajectoryList.get(index).get_pointArray();
+			ArrayList<Point> trajectory = trajectorySet.get(index).get_pointArray();
 			
 			for(int i = 0; i < trajectory.size(); i++){
 				long node = trajectory.get(i).get_coordinate(0);
@@ -147,12 +167,12 @@ public class Util {
 	}
 	
 	/* set the hash map for a trajectory list, the key is the length of each trajectory */
-	public static void setHaspMapTrajectoryListByLength(ArrayList<Trajectory> trajectoryList,
-			HashMap<Long, Integer> hashMap){
+	public static void setHaspMapTrajectoryListByLength(ArrayList<Trajectory> 
+			trajectorySet, HashMap<Long, Integer> hashMap){
 		
-		for(int index = 0; index < trajectoryList.size(); index++){
+		for(int index = 0; index < trajectorySet.size(); index++){
 			/* get the trajectory */
-			ArrayList<Point> trajectory = trajectoryList.get(index).get_pointArray();
+			ArrayList<Point> trajectory = trajectorySet.get(index).get_pointArray();
 			
 			long length = trajectory.size();
 			
@@ -163,12 +183,12 @@ public class Util {
 	}
 	
 	/* set the hash map for a trajectory list, the key is the duration of each trajectory */
-	public static void setHaspMapTrajectoryListByDuration(ArrayList<Trajectory> trajectoryList,
-			HashMap<Long, Integer> hashMap){
+	public static void setHaspMapTrajectoryListByDuration(ArrayList<Trajectory> 
+			trajectorySet, HashMap<Long, Integer> hashMap){
 		
-		for(int index = 0; index < trajectoryList.size(); index++){
+		for(int index = 0; index < trajectorySet.size(); index++){
 			/* get the trajectory */
-			ArrayList<Point> trajectory = trajectoryList.get(index).get_pointArray();
+			ArrayList<Point> trajectory = trajectorySet.get(index).get_pointArray();
 			
 			int length = trajectory.size();
 			
@@ -183,12 +203,12 @@ public class Util {
 	
 	/* set the hash map for a trajectory list, the key is the nDimension
 	 * field in a point of trajectory; the key can be the node or the time */
-	public static void setHaspMapTrajectoryListByPeriod(ArrayList<Trajectory> trajectoryList,
-			HashMap<Long, Integer> hashMap){
+	public static void setHaspMapTrajectoryListByPeriod(ArrayList<Trajectory> 
+			trajectorySet, HashMap<Long, Integer> hashMap){
 		
-		for(int index = 0; index < trajectoryList.size(); index++){
+		for(int index = 0; index < trajectorySet.size(); index++){
 			/* get the trajectory */
-			ArrayList<Point> trajectory = trajectoryList.get(index).get_pointArray();
+			ArrayList<Point> trajectory = trajectorySet.get(index).get_pointArray();
 			
 			for(int i = 0; i < trajectory.size(); i++){
 				long time = trajectory.get(i).get_coordinate(1);
@@ -215,43 +235,52 @@ public class Util {
 	
 	/* get clipping trajectory set with given origin and destination points */
 	public static void get_ClipSet(ArrayList<Trajectory> trajectoryClipList, 
-			int originPointId, int destinationPointId, ArrayList<Trajectory> 
-			trajectoryList, ArrayList<InvertedList> invertedIndex){
+			int originPointId, int destinationPointId){
 		
 		
 		/* get the intersection trajectory from two inverted lists */
 		ArrayList<Point> intersectionTrajectory = new ArrayList<Point>();
 		intersectionTrajectory(intersectionTrajectory, originPointId, 
-				destinationPointId, invertedIndex);
+				destinationPointId);
 		
 		/* extract the sub-trajectories from trajectory list */
-		extractSubTrajectoryClipList(trajectoryClipList, intersectionTrajectory, 
-				trajectoryList);
+		extractSubTrajectoryClipList(trajectoryClipList, intersectionTrajectory);
 		
 		
 	}
 	
 	/* get origin-destination trajectory set with given origin and destination points */
 	public static void  get_OriginDestinationSet(ArrayList<Trajectory> trajectoryODList,
-			int originPointId, int destinationPointId, ArrayList<Trajectory> 
-			trajectoryList, ArrayList<InvertedList> invertedIndex){
+			int originPointId, int destinationPointId){
 		
 		/* get the intersection trajectory from two inverted lists */
 		ArrayList<Point> intersectionTrajectory = new ArrayList<Point>();
 		intersectionTrajectory(intersectionTrajectory, originPointId, 
-				destinationPointId, invertedIndex);
+				destinationPointId);
 		
 		/* extract the sub-trajectories from trajectory list */
-		extractSubTrajectoryODList(trajectoryODList, intersectionTrajectory, 
-				trajectoryList);
+		extractSubTrajectoryODList(trajectoryODList, intersectionTrajectory);
+		
+	}
+	
+	/* get sub-trajectory set with given origin and destination points */
+	public static void  get_SubTrajectorySet(ArrayList<Trajectory> subTrajectoryList,
+			int originPointId, int destinationPointId){
+		
+		/* get the intersection trajectory from two inverted lists */
+		ArrayList<Point> intersectionTrajectory = new ArrayList<Point>();
+		intersectionTrajectory(intersectionTrajectory, originPointId, 
+				destinationPointId);
+		
+		/* extract the sub-trajectories from trajectory list */
+		extractSubTrajectoryList(subTrajectoryList, intersectionTrajectory);
 		
 	}
 	
 	/* extract a sub-trajectory list with given intersection trajectory list 
 	 * this sub-trajectory is a set of clipping trajectories*/
 	public static void  extractSubTrajectoryClipList(ArrayList<Trajectory> 
-			subTrajectoryList, ArrayList<Point> intersectionTrajectory, 
-			ArrayList<Trajectory> trajectoryList){
+			subTrajectoryList, ArrayList<Point> intersectionTrajectory){
 		
 		/* FIXME: by now the trajectory id is the same as
 		 *  the index in the trajectory list*/
@@ -300,8 +329,7 @@ public class Util {
 	/* extract a sub-trajectory list with given intersection trajectory list 
 	 * this sub-trajectory is a set of origin-destination trajectories*/
 	public static void extractSubTrajectoryODList(ArrayList<Trajectory> 
-			subTrajectoryList, ArrayList<Point> intersectionTrajectory, 
-			ArrayList<Trajectory> trajectoryList){
+			subTrajectoryList, ArrayList<Point> intersectionTrajectory){
 		
 		/* FIXME: by now the trajectory id is the same as
 		 *  the index in the trajectory list*/
@@ -333,7 +361,7 @@ public class Util {
 	/* extract a sub-trajectory list with given intersection trajectory list 
 	 * this sub-trajectory does not concern whether a sub-trajectory is od or clipping*/
 	public static void extractSubTrajectoryList(ArrayList<Trajectory> subTrajectoryList, 
-			ArrayList<Point> intersectionTrajectory, ArrayList<Trajectory> trajectoryList){
+			ArrayList<Point> intersectionTrajectory){
 		
 		/* FIXME: by now the trajectory id is the same as
 		 *  the index in the trajectory list*/
@@ -362,8 +390,8 @@ public class Util {
 	
 	
 	/* build the trajectory list by reading trajectory file */
-	public static void buildTrajectoryList(ArrayList<Trajectory> trajectoryList, 
-			String trajectoryFile, int pointDimension) throws FileNotFoundException{
+	public static void buildTrajectoryList(String trajectoryFile, 
+			int pointDimension) throws FileNotFoundException{
 		
 		FileInputStream inputStreamTrajectoryList = new FileInputStream(trajectoryFile);
 		
@@ -405,8 +433,8 @@ public class Util {
 	}
 	
 	/* build the inverted index by reading the inverted-index file */
-	public static void buildInvertedIndex(ArrayList<InvertedList> invertedIndex, 
-			String invertedIndexFile) throws FileNotFoundException {
+	public static void buildInvertedIndex(String invertedIndexFile) 
+			throws FileNotFoundException {
 		
         FileInputStream inputStreamInvertedIndex = 
         		new FileInputStream(invertedIndexFile);
@@ -451,8 +479,7 @@ public class Util {
 	
 	/* get intersection trajectory with two point ids */
 	public static void intersectionTrajectory(ArrayList<Point> intersectionList, 
-			long originPointId, long destinationPointId, 
-			ArrayList<InvertedList> invertedIndex){
+			long originPointId, long destinationPointId){
 		
 		/* FIXME: at this stage, the point id is the same
 		 * as the point index */
@@ -552,5 +579,132 @@ public class Util {
         }
               
     }
+    
+	/* read the connected list which is generated beforehand 
+	 * referring to the PreProcess.java */
+	public static void  buildConnectedList(String fileName) 
+			throws FileNotFoundException{
+		
+		FileInputStream inputStreamConnectedList = new FileInputStream(fileName);
+		
+        @SuppressWarnings("resource")
+		Scanner scConnectedList = new Scanner(inputStreamConnectedList, "UTF-8");
+        String lineConnectedList = "";
+        String SplitBy = ",";
+        
+        while (scConnectedList.hasNextLine()) {
+        	
+        	/* scan a line */
+            lineConnectedList = scConnectedList.nextLine();
+            
+            /* split a line into items, store into an array */
+            String[] lineData = lineConnectedList.split(SplitBy);
+            ArrayList<Integer> pointList = new ArrayList<Integer>();
+            
+            /* scan the element of a line */
+            for(int columnIndex = 1; columnIndex < lineData.length; columnIndex++){           	
+            	/* add the point index to the list */
+            	pointList.add(Integer.parseInt(lineData[columnIndex]));
+            }
 
+            /* add the list to array */
+            connectedList.add(pointList);
+        }		
+	}
+	
+	public static void getPathEnum(int k, int currentPointId, int destinationPointId,
+			ArrayList<Integer> pathEnum, ArrayList<ArrayList<Integer>> result) {
+		
+		ArrayList<Integer> neighborList = connectedList.get(currentPointId);
+		if (k == 0) {
+			if (neighborList.contains(destinationPointId)) {
+				pathEnum.add(destinationPointId);
+				
+				/* check whether there is loop in the permutation */
+				HashSet<Integer> pathSet = new HashSet<Integer>();
+				for(Integer elem : pathEnum){
+					pathSet.add(elem);
+				}
+				
+				if(pathSet.size() == pathEnum.size())
+					result.add(pathEnum);
+			}
+			return;
+		}
+		/* start the recursion */
+		for (Integer elem : neighborList) {
+			/* new a new path to add the current point into the path */
+			ArrayList<Integer> newPath = new ArrayList<Integer>(pathEnum);
+			newPath.add(elem);
+			getPathEnum(k-1, elem, destinationPointId, newPath, result);
+		
+		}
+	}
+	
+	/* get the concatenation trajectory with a sequence of concatenation points */
+	public static void getConcatenationTrajectory(ArrayList<Trajectory> concatenateTrajectory, 
+			ArrayList<Integer> concatenatePoint){
+		
+		/* get the sub-trajectory in between two connected points */
+		for(int index = 0; index < concatenatePoint.size() - 1; index++){
+			
+			ArrayList<Trajectory> subTrajectorySet = new ArrayList<Trajectory>();
+			get_SubTrajectorySet(subTrajectorySet, concatenatePoint.get(index),
+					concatenatePoint.get(index + 1));
+			
+			/* check whether there are sub-trajectories*/
+			if(subTrajectorySet.size() == 0){
+				System.out.println("Warning: [Util::getConcatenationTrajectory] There is no "
+						+ "sub-trajectories between " + concatenatePoint.get(index) + 
+						" and " + concatenatePoint.get(index + 1));
+			}
+			
+			/* add the sub-trajectory into the concatenation set of trajectories */
+			for(Trajectory elem : subTrajectorySet)
+				concatenateTrajectory.add(elem);
+		}		
+	}
+
+	/* calculate the distance between sub-trajectory set and the concatenation 
+	 * trajectory set */
+	public static double calculateConcatenateHist(int originPoint, int destinationPoint, 
+			int k, String option){
+		double averageDistance = 0.0;
+		
+		/* get the sub-trajectories from the origin to the destination */
+		ArrayList<Trajectory> subTrajectorySet = new ArrayList<Trajectory>();
+		get_SubTrajectorySet(subTrajectorySet, originPoint, destinationPoint);
+		
+		/* get the concatenation point list */
+		ArrayList<ArrayList<Integer>> concatenationPointList = new ArrayList<>();
+        ArrayList<Integer> path = new ArrayList<Integer>();
+        /* add the first point to the path */
+        path.add(originPoint);
+        getPathEnum(k, originPoint, destinationPoint, path, concatenationPointList);
+        
+        /* get the number of concatenation points */
+        long numConPoint = concatenationPointList.size();
+        
+        System.out.println("the number of paths = " + numConPoint);
+        
+        double sumDistance = 0.0;
+        
+        /* calculate the histogram distance for each paths */
+        for(int index = 0; index < numConPoint; index++){
+        	/* get the concatenation trajectories */
+        	ArrayList<Trajectory> concatenationTrajectory = new ArrayList<Trajectory>();
+        	getConcatenationTrajectory(concatenationTrajectory, 
+        			concatenationPointList.get(index));
+        	/* calculate the histogram distance between sub-trajectory set
+        	 * and each concatenation trajectory set */
+        	double histDistance = featureStatistics(subTrajectorySet, 
+        			concatenationTrajectory, option);
+        	sumDistance = sumDistance + histDistance;
+        }
+		
+        averageDistance = sumDistance/numConPoint;
+		return averageDistance;
+	}
+	
+	
 }

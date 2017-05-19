@@ -10,8 +10,8 @@ public class Main {
 		System.out.print("***** Start the procedure with the construction of trajectory list! *****\n");
         long startTime = System.currentTimeMillis();
             
-        ArrayList<Trajectory> trajectoryList = new ArrayList<Trajectory>();
-        Util.buildTrajectoryList(trajectoryList, "/media/dragon_data/uqdhe/"
+        Util.trajectoryList = new ArrayList<Trajectory>();
+        Util.buildTrajectoryList("/media/dragon_data/uqdhe/"
         		+ "BeijingFiveDays/mydata/beijingTrajectory-newnodesequence", 2);
         
         long endTime   = System.currentTimeMillis();
@@ -20,35 +20,38 @@ public class Main {
         System.out.print("***** Finish the construction of trajectory list and start the construction"
         		+ " of inverted list! *****\n"); 
         
-        ArrayList<InvertedList> invertedIndex = new ArrayList<InvertedList>();
-        Util.buildInvertedIndex(invertedIndex, "/media/dragon_data/uqdhe/"
+        Util.invertedIndex = new ArrayList<InvertedList>();
+        Util.buildInvertedIndex("/media/dragon_data/uqdhe/"
         		+ "BeijingFiveDays/mydata/invertedindex");
         
         endTime   = System.currentTimeMillis();
         totalTime = (endTime - startTime)/1000;
         System.out.println("The time for inverted list construction is: " + totalTime + "s! \n");
-        System.out.print("***** Finish the construction of inverted list and start the sub-trajectory"
+        System.out.print("***** Finish the construction of inverted list and start the construction"
+        		+ " of connected list! *****\n");
+        
+        Util.connectedList = new ArrayList<ArrayList<Integer>> ();
+        Util.buildConnectedList("/media/dragon_data/uqdhe/"
+        		+ "BeijingFiveDays/mydata/connectedlist");
+        
+        endTime   = System.currentTimeMillis();
+        totalTime = (endTime - startTime)/1000;
+        System.out.println("The time for connected list construction is: " + totalTime + "s! \n");
+        System.out.print("***** Finish the construction of connected list and start the sub-trajectory"
         		+ " extraction! *****\n");
         
         int originPointId = 258144;
-        int destinationPointId = 255392;
-        
-        ArrayList<Trajectory> trajectoryListOD = new ArrayList<Trajectory>();
-        Util.get_OriginDestinationSet(trajectoryListOD, originPointId, destinationPointId, 
-        				trajectoryList, invertedIndex);
-        
-        System.out.println("The number of OD trajectories is : " + trajectoryListOD.size());
-        
-        ArrayList<Trajectory> trajectoryListClip = new ArrayList<Trajectory>();
-        Util.get_ClipSet(trajectoryListClip, originPointId, destinationPointId, 
-        				trajectoryList, invertedIndex);
-        
-        System.out.println("The number of Clipping trajectories is : " + trajectoryListClip.size());
+        int destinationPointId = 255392;        
         
         double distance = 0.0;
-        distance = Util.featureStatistics(trajectoryListOD, trajectoryListClip, "timePeriod");
         
-        System.out.println("the test distance = " + distance + "\n");
+        distance = Util.calculateClipHist(originPointId, destinationPointId, "timePeriod");
+  
+        System.out.println("the test od and clipping distance = " + distance + "\n");
+        
+        distance = Util.calculateConcatenateHist(originPointId, destinationPointId, 1, "timePeriod");
+        
+        System.out.println("the test od and concatenation distance = " + distance + "\n");
 
 	}
 
