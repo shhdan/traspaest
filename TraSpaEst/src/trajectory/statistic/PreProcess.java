@@ -4,6 +4,7 @@ package trajectory.statistic;
 
 import java.io.BufferedWriter;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
@@ -70,9 +71,55 @@ public class PreProcess {
         System.out.println("the number of line = " + lineIndex);
 	}
 	
+	public static double scanConnectedList(String inputFile) throws FileNotFoundException{
+		double averageDegree = 0.0;
+	
+		FileInputStream inputStreamConnectedList = new FileInputStream(inputFile);
+		
+        @SuppressWarnings("resource")
+		Scanner scConnectedList = new Scanner(inputStreamConnectedList, "UTF-8");
+        String lineConnectedList = "";
+        String SplitBy = ",";
+        long totalDegree = 0;
+        int lineIndex = 0;
+        long maxDegree = 0;
+        
+        while (scConnectedList.hasNextLine()) {
+        	
+/*        	if(lineIndex == 10)
+        		break;*/
+        	
+        	if(lineIndex % 10000 == 0)
+        		System.out.println("lineIndex = " + lineIndex);
+        	
+        	/* scan a line */
+            lineConnectedList = scConnectedList.nextLine();
+            
+            /* split a line into items, store into an array */
+            String[] lineData = lineConnectedList.split(SplitBy);
+            
+            if(lineData.length > maxDegree)
+            	maxDegree = lineData.length - 1;
+            
+            totalDegree = totalDegree + lineData.length - 1;
+            
+            lineIndex++;
+        }
+        System.out.println("totalDegree = " + totalDegree);
+        System.out.println("maxDegree = " + maxDegree);
+        averageDegree = totalDegree/lineIndex;
+        
+        return averageDegree;
+		
+	}
+	
 	public static void main(String[] args) throws IOException {
-		generateConnectedList("/media/bigdata/uqdhe/odpair-stas", "/media/dragon_data/uqdhe/"
+		//generateConnectedList("/media/bigdata/uqdhe/odpair-stas", "/media/dragon_data/uqdhe/"
+        //		+ "BeijingFiveDays/mydata/connectedlist");
+		
+		double averageDegree = scanConnectedList("/media/dragon_data/uqdhe/"
         		+ "BeijingFiveDays/mydata/connectedlist");
+		System.out.println("the average degree = " + averageDegree + "\n");
 	}
 	
 

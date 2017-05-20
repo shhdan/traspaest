@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map.Entry;
+import java.util.Random;
 import java.util.Scanner;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,6 +21,7 @@ public class Util {
     public static final int SECOND = 60;
     public static final int MINUTE = 60;
     public static final int HOUR = 24;
+    public static final int PATH_RANDOM = 1000;
     public static ArrayList<Trajectory> trajectoryList;
     public static ArrayList<InvertedList> invertedIndex;
 	public static ArrayList<ArrayList<Integer>> connectedList;
@@ -659,7 +661,7 @@ public class Util {
 		for(int index = 0; index < concatenatePoint.size() - 1; index++){
 			
 			ArrayList<Trajectory> subTrajectorySet = new ArrayList<Trajectory>();
-			get_SubTrajectorySet(subTrajectorySet, concatenatePoint.get(index),
+			get_OriginDestinationSet(subTrajectorySet, concatenatePoint.get(index),
 					concatenatePoint.get(index + 1));
 			
 			/* check whether there are sub-trajectories*/
@@ -683,7 +685,7 @@ public class Util {
 		
 		/* get the sub-trajectories from the origin to the destination */
 		ArrayList<Trajectory> subTrajectorySet = new ArrayList<Trajectory>();
-		get_SubTrajectorySet(subTrajectorySet, originPoint, destinationPoint);
+		get_OriginDestinationSet(subTrajectorySet, originPoint, destinationPoint);
 		
 		/* get the concatenation point list */
 		ArrayList<ArrayList<Integer>> concatenationPointList = new ArrayList<>();
@@ -695,16 +697,30 @@ public class Util {
         /* get the number of concatenation points */
         long numConPoint = concatenationPointList.size();
         
+        ArrayList<ArrayList<Integer>> concatenationPointListNew = new ArrayList<>();
+        ArrayList<ArrayList<Integer>> concatenationPointListFinal = new ArrayList<>();
+        
+        if(numConPoint > PATH_RANDOM){
+        	randomPath(PATH_RANDOM, concatenationPointList, concatenationPointListNew);
+        	concatenationPointListFinal = concatenationPointListNew;
+        }
+        else
+        	concatenationPointListFinal = concatenationPointList;
+        	
+        
         System.out.println("the number of paths = " + numConPoint);
+        System.out.println("the number of new paths = " + concatenationPointListNew.size());
         
         double sumDistance = 0.0;
         
+        long numConPointFinal = concatenationPointListFinal.size();
+        
         /* calculate the histogram distance for each paths */
-        for(int index = 0; index < numConPoint; index++){
+        for(int index = 0; index < numConPointFinal; index++){
         	/* get the concatenation trajectories */
         	ArrayList<Trajectory> concatenationTrajectory = new ArrayList<Trajectory>();
         	getConcatenationTrajectory(concatenationTrajectory, 
-        			concatenationPointList.get(index));
+        			concatenationPointListFinal.get(index));
         	/* calculate the histogram distance between sub-trajectory set
         	 * and each concatenation trajectory set */
         	double histDistance = featureStatistics(subTrajectorySet, 
@@ -712,8 +728,29 @@ public class Util {
         	sumDistance = sumDistance + histDistance;
         }
 		
-        averageDistance = sumDistance/numConPoint;
+        averageDistance = sumDistance/numConPointFinal;
 		return averageDistance;
+	}
+	
+	public static void randomPath(int randomNum, ArrayList<ArrayList<Integer>> originList,
+			ArrayList<ArrayList<Integer>> newList){
+		
+		int originListNum = originList.size();
+		ArrayList<Integer> randomValue = new ArrayList<Integer>();
+		Random randomGenerator = new Random();
+		
+		while(randomValue.size() < randomNum){
+			int random = randomGenerator.nextInt(originListNum);
+			
+			if(!randomValue.contains(random))
+				randomValue.add(random);
+		}
+		
+		for(Integer elem : randomValue){
+			ArrayList<Integer> list = new ArrayList<Integer>();
+			list = originList.get(elem);
+			newList.add(list);
+		}
 	}
 	
 	

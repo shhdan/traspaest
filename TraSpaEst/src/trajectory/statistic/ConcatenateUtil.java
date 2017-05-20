@@ -1,7 +1,10 @@
 package trajectory.statistic;
 
+import java.io.BufferedWriter;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Scanner;
@@ -83,11 +86,12 @@ public class ConcatenateUtil {
 	}
 	
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		FileInputStream inputStreamTrajectoryList;
 		connectedList = new ArrayList<>();
 		try {
-			inputStreamTrajectoryList = new FileInputStream("/home/uqdhe/data/tmp");
+			inputStreamTrajectoryList = new FileInputStream("/media/dragon_data/uqdhe/"
+	        		+ "BeijingFiveDays/mydata/connectedlistod");
 			@SuppressWarnings("resource")
 			Scanner scTrajectoryList = new Scanner(inputStreamTrajectoryList, "UTF-8");
 	        String lineTrajectoryList = "";
@@ -110,17 +114,29 @@ public class ConcatenateUtil {
 	            connectedList.add(list);
 	        }
 	        
-	        ArrayList<ArrayList<Integer>> result = new ArrayList<>();
-	        ArrayList<Integer> path = new ArrayList<Integer>();
-	        int start=2;
-	        int dest=4;
-	        path.add(start);
-	        getPathEnum(3, start, dest, path, result);
-	        for (ArrayList<Integer> list: result) {
-	        	for (Integer i : list) {
-	        		System.out.print(i+",");
-	        	}
-	        	System.out.println();
+	        int start=382787;
+	        int dest=228884;
+	        
+	        for(int round = 1; round < 6; round++){
+	        	FileWriter file = new FileWriter("/media/dragon_data/uqdhe/"
+	            		+ "BeijingFiveDays/mydata/pathlist/" + round);
+
+	    		BufferedWriter outputWriter = new BufferedWriter(file);
+	        
+	    		ArrayList<ArrayList<Integer>> result = new ArrayList<>();
+	    		ArrayList<Integer> path = new ArrayList<Integer>();
+
+	    		path.add(start);
+	    		getPathEnum(round, start, dest, path, result);
+	    		for (ArrayList<Integer> list: result) {
+	    			for (Integer i : list) {
+	    				outputWriter.append(i+",");
+	    			}
+	    			outputWriter.newLine();
+	    		}
+	    		outputWriter.flush();
+	    		outputWriter.close();
+	        
 	        }
 	        
 		} catch (FileNotFoundException e) {

@@ -50,10 +50,11 @@ public class Histogram {
 		}
 			
 		for(int i = 0; i < this.bin; i++){
-			sumDistance = Math.abs((double)this.occurrence[i]/sumThis - (double)hist.occurrence[i]/sumHist);
+			sumDistance = sumDistance + 
+					Math.abs((double)this.occurrence[i]/sumThis - (double)hist.occurrence[i]/sumHist);
 		}
 		
-		distance = sumDistance/this.bin;
+		distance = sumDistance/2;
 		
 		return distance;
 	}
