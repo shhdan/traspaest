@@ -50,7 +50,7 @@ public class Trajectory {
     		return subTrajectory;
     	}
     	
-    	for(int index = start + 1 ; index < end; index++){
+    	for(int index = start ; index <= end; index++){
     		subTrajectory.add(this.get_pointArray().get(index));
     	}
     	

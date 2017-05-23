@@ -46,13 +46,13 @@ public class Main {
         
 		
 		FileInputStream inputStreamConnectedList = new FileInputStream("/media/dragon_data/uqdhe/"
-        		+ "BeijingFiveDays/mydata/odPointPair");
+        		+ "BeijingFiveDays/mydata/tmp.txt");
 
 		
         @SuppressWarnings("resource")
 		Scanner scConnectedList = new Scanner(inputStreamConnectedList, "UTF-8");
         String lineConnectedList = "";
-        String SplitBy = ",";
+        String SplitBy = "\t";
         int lineIndex = 0;
         
         while (scConnectedList.hasNextLine()) {
@@ -60,14 +60,12 @@ public class Main {
         	System.out.println("this is the " + lineIndex + " line!");
         	
     		FileWriter file = new FileWriter("/media/dragon_data/uqdhe/"
-            		+ "BeijingFiveDays/mydata/output/" + lineIndex);
+            		+ "BeijingFiveDays/mydata/output-time/" + lineIndex);
 
     		BufferedWriter outputWriter = new BufferedWriter(file);
         	
-        	if(lineIndex == 10)
-        		break;
         	
-        	if(lineIndex % 100 == 0)
+        	if(lineIndex % 10 == 0)
         		System.out.println("lineIndex = " + lineIndex);
         	
         	 //scan a line 
@@ -84,14 +82,14 @@ public class Main {
         
 	        double distance = 0.0;
 	        
-	        distance = Util.calculateClipHist(originPointId, destinationPointId, "node");
+	        distance = Util.calculateClipHist(originPointId, destinationPointId, "timePeriod");
 	        
 	        outputWriter.append("the point pairs : " + lineData[0] + "," + lineData[1] + "\n");
 	        outputWriter.append("the test od and clipping distance = " + distance + "\n");
 	        
 	        for(int i = 1; i < 6; i++){
 	        
-	        	distance = Util.calculateConcatenateHist(originPointId, destinationPointId, i, "node");
+	        	distance = Util.calculateConcatenateHist(originPointId, destinationPointId, i, "timePeriod");
 	        
 	        	outputWriter.append("the test od and concatenation distance = " + distance + " when k = "
 	        			+ i + "\n");
@@ -101,16 +99,16 @@ public class Main {
 	        lineIndex++;
         }
         
+       
         
-        
-/*        int originPointId = 382787;
-        int destinationPointId = 228884; 
+/*       int originPointId = 288097;
+        int destinationPointId = 336995; 
 		// get the sub-trajectories from the origin to the destination 
 		ArrayList<Trajectory> subTrajectorySet = new ArrayList<Trajectory>();
-		Util.get_OriginDestinationSet(subTrajectorySet, originPointId, destinationPointId);
+		Util.get_ClipSet(subTrajectorySet, originPointId, destinationPointId);
 		
 		FileWriter file0 = new FileWriter("/media/dragon_data/uqdhe/"
-        		+ "BeijingFiveDays/mydata/trajectorylist/0/0");
+        		+ "BeijingFiveDays/mydata/trajectorylist2/0/1");
 
 		BufferedWriter outputWriter0 = new BufferedWriter(file0);
 		
@@ -155,7 +153,7 @@ public class Main {
 	
 	        for(int index = 0; index < numConPointFinal; index++){
 	    		FileWriter file = new FileWriter("/media/dragon_data/uqdhe/"
-	            		+ "BeijingFiveDays/mydata/trajectorylist/" + round +"/"+(index+1));
+	            		+ "BeijingFiveDays/mydata/trajectorylist2/" + round +"/"+(index+1));
 
 	    		BufferedWriter outputWriter = new BufferedWriter(file);
 	        	// get the concatenation trajectories 
@@ -173,11 +171,9 @@ public class Main {
 	        	outputWriter.close();
 	
 	        }
-		}
-		*/
+		}*/
 		
-
-	        
+			        
 	    System.out.println("This is the end of the program!\n");
         
         

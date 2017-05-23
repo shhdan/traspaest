@@ -301,14 +301,14 @@ public class Util {
 			
 			/* calculate the current averageLength of trajectory */
 			averageLength = (averageLength * index + 
-					trajectoryList.get(trajectoryIndex).get_pointArray().size())/(index + 1);
+					(endPosition - startPosition + 1))/(index + 1);
 			
 			/* FIXME: if the length of sub-trajectory is larger than noise-threshold times 
 			 *  of average length, it is regarded as a noise sub-trajectory*/
-			if(trajectoryList.get(trajectoryIndex).get_pointArray().size() 
+			if((endPosition - startPosition + 1) 
 					> NOISE_THRESHOLD * averageLength){
 				averageLength = (averageLength * (index + 1) -
-						trajectoryList.get(trajectoryIndex).get_pointArray().size())/index;
+						(endPosition - startPosition + 1))/index;
 				continue;
 			}
 			
@@ -335,6 +335,9 @@ public class Util {
 		
 		/* FIXME: by now the trajectory id is the same as
 		 *  the index in the trajectory list*/
+		
+		/* FIXME: set a noise filter threshold */
+		int averageLength = 0;
 		for(int index = 0; index < intersectionTrajectory.size(); index++){
 			
 			Trajectory subTrajectory = new Trajectory();
@@ -343,6 +346,19 @@ public class Util {
 			int trajectoryIndex = (int)intersectionTrajectory.get(index).get_coordinate(0);
 			int startPosition = (int)intersectionTrajectory.get(index).get_coordinate(1);
 			int endPosition = (int)intersectionTrajectory.get(index).get_coordinate(2);
+			
+			/* calculate the current averageLength of trajectory */
+			averageLength = (averageLength * index + 
+					(endPosition - startPosition + 1))/(index + 1);
+			
+			/* FIXME: if the length of sub-trajectory is larger than noise-threshold times 
+			 *  of average length, it is regarded as a noise sub-trajectory*/
+			if((endPosition - startPosition + 1) 
+					> NOISE_THRESHOLD * averageLength){
+				averageLength = (averageLength * (index + 1) -
+						(endPosition - startPosition + 1))/index;
+				continue;
+			}
 			
 			if(startPosition == 0 && endPosition == 
 					trajectoryList.get(trajectoryIndex).get_pointArray().size() - 1){

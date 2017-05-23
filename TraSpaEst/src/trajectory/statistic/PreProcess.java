@@ -15,6 +15,8 @@ public class PreProcess {
 	/* the threshold of number of trajectory between two points */
 	public static final int NUM_OF_TRAJECTORY = 1;
 	
+	public static final int FILENUM = 500;
+	
 	/* read from a matrix which was generated beforehand storing 
 	 * the number of trajectories passing from one point to another 
 	 * point, in order to reduce the space of the matrix by keeping
@@ -113,13 +115,72 @@ public class PreProcess {
 		
 	}
 	
+	public static void scanResultList(String inputFile, String outputFile) 
+			throws IOException{
+		
+		
+		FileWriter file = new FileWriter(outputFile);
+
+		BufferedWriter outputWriter = new BufferedWriter(file);
+		
+		for(int index = 0; index < FILENUM; index++){
+			FileInputStream inputStreamResultList = 
+					new FileInputStream(inputFile + index);
+			
+	        @SuppressWarnings("resource")
+			Scanner scResultList = new Scanner(inputStreamResultList, "UTF-8");
+	        String lineResultList = "";
+	        String SplitBy = " ";
+
+	        int lineIndex = 0;
+
+        
+	        while (scResultList.hasNextLine()) {
+	        	
+	/*        	if(lineIndex == 10)
+	        		break;*/
+	        	
+	        	if(lineIndex % 10000 == 0)
+	        		System.out.println("lineIndex = " + lineIndex);
+	        	
+	        	/* scan a line */
+	        	lineResultList = scResultList.nextLine();
+	            
+	            /* split a line into items, store into an array */
+	            String[] lineData = lineResultList.split(SplitBy);
+	            System.out.println(lineData[0]);
+	            
+	            if(lineIndex == 0){
+	            	outputWriter.append(lineData[4]);
+	            }
+	            else{
+	            	outputWriter.append(lineData[7]);
+	            }
+	            outputWriter.append("\t");
+	            lineIndex++;
+	            
+	        }
+	        outputWriter.newLine();
+	        
+		}
+		outputWriter.flush();
+		outputWriter.close();
+		
+	}
+	
 	public static void main(String[] args) throws IOException {
 		//generateConnectedList("/media/bigdata/uqdhe/odpair-stas", "/media/dragon_data/uqdhe/"
         //		+ "BeijingFiveDays/mydata/connectedlist");
 		
-		double averageDegree = scanConnectedList("/media/dragon_data/uqdhe/"
-        		+ "BeijingFiveDays/mydata/connectedlist");
-		System.out.println("the average degree = " + averageDegree + "\n");
+		//double averageDegree = scanConnectedList("/media/dragon_data/uqdhe/"
+        //		+ "BeijingFiveDays/mydata/connectedlist");
+		//System.out.println("the average degree = " + averageDegree + "\n");
+		
+		scanResultList("/media/dragon_data/uqdhe/BeijingFiveDays/mydata/output-time/", 
+				"/media/dragon_data/uqdhe/BeijingFiveDays/mydata/output-stat");
+		
+		System.out.println("This is the end of the program!");
+		
 	}
 	
 
