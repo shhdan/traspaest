@@ -288,7 +288,8 @@ public class Util {
 		 *  the index in the trajectory list*/
 		
 		/* FIXME: set a noise filter threshold */
-		int averageLength = 0;
+		int averageLengthCurrent = 0;
+		int averageLengthPrevious = 0;
 		
 		for(int index = 0; index < intersectionTrajectory.size(); index++){
 			
@@ -299,18 +300,26 @@ public class Util {
 			int startPosition = (int)intersectionTrajectory.get(index).get_coordinate(1);
 			int endPosition = (int)intersectionTrajectory.get(index).get_coordinate(2);
 			
-			/* calculate the current averageLength of trajectory */
-			averageLength = (averageLength * index + 
-					(endPosition - startPosition + 1))/(index + 1);
+			if(index == 0){
+				averageLengthCurrent = endPosition - startPosition + 1;
+				averageLengthPrevious = endPosition - startPosition + 1;
+			}
+			
+			else{
+				
+				/* calculate the current averageLength of trajectory */
+				averageLengthCurrent = (averageLengthPrevious * index + 
+						(endPosition - startPosition + 1))/(index + 1);
+			}
 			
 			/* FIXME: if the length of sub-trajectory is larger than noise-threshold times 
 			 *  of average length, it is regarded as a noise sub-trajectory*/
 			if((endPosition - startPosition + 1) 
-					> NOISE_THRESHOLD * averageLength){
-				averageLength = (averageLength * (index + 1) -
-						(endPosition - startPosition + 1))/index;
+					> NOISE_THRESHOLD * averageLengthPrevious){
+				averageLengthCurrent = averageLengthPrevious;
 				continue;
 			}
+			averageLengthPrevious = averageLengthCurrent;
 			
 			if(startPosition != 0 || endPosition != 
 					trajectoryList.get(trajectoryIndex).get_pointArray().size() - 1){

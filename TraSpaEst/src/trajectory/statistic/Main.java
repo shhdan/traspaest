@@ -100,7 +100,7 @@ public class Main {
         }
         
        
-        
+      
 /*       int originPointId = 288097;
         int destinationPointId = 336995; 
 		// get the sub-trajectories from the origin to the destination 

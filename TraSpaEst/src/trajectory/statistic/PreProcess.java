@@ -176,8 +176,8 @@ public class PreProcess {
         //		+ "BeijingFiveDays/mydata/connectedlist");
 		//System.out.println("the average degree = " + averageDegree + "\n");
 		
-		scanResultList("/media/dragon_data/uqdhe/BeijingFiveDays/mydata/output-time/", 
-				"/media/dragon_data/uqdhe/BeijingFiveDays/mydata/output-stat");
+		scanResultList("/media/dragon_data/uqdhe/BeijingFiveDays/mydata/output-node/", 
+				"/media/dragon_data/uqdhe/BeijingFiveDays/mydata/output-stat-node");
 		
 		System.out.println("This is the end of the program!");
 		
