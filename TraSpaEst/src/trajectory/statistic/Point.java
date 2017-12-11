@@ -5,14 +5,14 @@ import rtree.IndexablePoint;
 public class Point extends IndexablePoint{
 
 	private int nDimensions; 	// the number of dimensions of a point
-	long[] coordinate;	    // the coordinate of a point
+	int[] coordinate;	    // the coordinate of a point
 	
 	/* default constructor which shall be never used, 
 	 * we can use the following constructor instead
 	 */
 	public Point() {		
 		nDimensions = 2;
-		coordinate = new long[nDimensions];
+		coordinate = new int[nDimensions];
 		coordinate[0] = coordinate[1] = 0;
 	}
 	
@@ -21,7 +21,7 @@ public class Point extends IndexablePoint{
 	 */
 	public Point(int Dimensions) {
 		nDimensions = Dimensions;
-		coordinate = new long[nDimensions];
+		coordinate = new int[nDimensions];
 		for( int i=0; i < nDimensions; i++ ) {
 			coordinate[i] = 0;
 		}
@@ -32,7 +32,7 @@ public class Point extends IndexablePoint{
 	 * @param nth #dimension
 	 * @return
 	 */
-	public long get_coordinate(int nth) {
+	public int get_coordinate(int nth) {
 		
 		return coordinate[nth];
 	}
@@ -46,7 +46,7 @@ public class Point extends IndexablePoint{
 	 * @param nth dimension
 	 * @param value value
 	 */
-	public void set_coordinate(int nth, long value) {
+	public void set_coordinate(int nth, int value) {
 		this.coordinate[nth] = value;
 	}
 	

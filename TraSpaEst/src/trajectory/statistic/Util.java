@@ -22,9 +22,9 @@ public class Util {
     public static final int MINUTE = 60;
     public static final int HOUR = 24;
     public static final int PATH_RANDOM = 1000;
-    public static ArrayList<Trajectory> trajectoryList;
-    public static ArrayList<InvertedList> invertedIndex;
-	public static ArrayList<ArrayList<Integer>> connectedList;
+    public static ArrayList<Trajectory> trajectoryList = new ArrayList<Trajectory>();
+    public static ArrayList<InvertedList> invertedIndex = new ArrayList<InvertedList>();
+	public static ArrayList<ArrayList<Integer>> connectedList = new ArrayList<ArrayList<Integer>>();
 	
 	/* calculate the distance between the od trajectories set and the clipping trajectory set */
 	public static double calculateClipHist(int originPoint, int destinationPoint, String option){
@@ -288,8 +288,8 @@ public class Util {
 		 *  the index in the trajectory list*/
 		
 		/* FIXME: set a noise filter threshold */
-		int averageLengthCurrent = 0;
-		int averageLengthPrevious = 0;
+//		int averageLengthCurrent = 0;
+//		int averageLengthPrevious = 0;
 		
 		for(int index = 0; index < intersectionTrajectory.size(); index++){
 			
@@ -300,29 +300,29 @@ public class Util {
 			int startPosition = (int)intersectionTrajectory.get(index).get_coordinate(1);
 			int endPosition = (int)intersectionTrajectory.get(index).get_coordinate(2);
 			
-			if(index == 0){
-				averageLengthCurrent = endPosition - startPosition + 1;
-				averageLengthPrevious = endPosition - startPosition + 1;
-			}
-			
-			else{
-				
-				/* calculate the current averageLength of trajectory */
-				averageLengthCurrent = (averageLengthPrevious * index + 
-						(endPosition - startPosition + 1))/(index + 1);
-			}
-			
-			/* FIXME: if the length of sub-trajectory is larger than noise-threshold times 
-			 *  of average length, it is regarded as a noise sub-trajectory*/
-			if((endPosition - startPosition + 1) 
-					> NOISE_THRESHOLD * averageLengthPrevious){
-				averageLengthCurrent = averageLengthPrevious;
-				continue;
-			}
-			averageLengthPrevious = averageLengthCurrent;
-			
-			if(startPosition != 0 || endPosition != 
-					trajectoryList.get(trajectoryIndex).get_pointArray().size() - 1){
+//			if(index == 0){
+//				averageLengthCurrent = endPosition - startPosition + 1;
+//				averageLengthPrevious = endPosition - startPosition + 1;
+//			}
+//			
+//			else{
+//				
+//				/* calculate the current averageLength of trajectory */
+//				averageLengthCurrent = (averageLengthPrevious * index + 
+//						(endPosition - startPosition + 1))/(index + 1);
+//			}
+//			
+//			/* FIXME: if the length of sub-trajectory is larger than noise-threshold times 
+//			 *  of average length, it is regarded as a noise sub-trajectory*/
+//			if((endPosition - startPosition + 1) 
+//					> NOISE_THRESHOLD * averageLengthPrevious){
+//				averageLengthCurrent = averageLengthPrevious;
+//				continue;
+//			}
+//			averageLengthPrevious = averageLengthCurrent;
+//			
+//			if(startPosition != 0 || endPosition != 
+//					trajectoryList.get(trajectoryIndex).get_pointArray().size() - 1){
 				/* set sub-trajectory id */
 				subTrajectory.set_trajectoryId(trajectoryIndex);
 				
@@ -332,7 +332,7 @@ public class Util {
 				
 				/* add sub-trajectory to the result list */
 				subTrajectoryList.add(subTrajectory);
-			}
+//			}
 		}
 		
 	}
@@ -441,14 +441,14 @@ public class Util {
             trajectoryItem.set_trajectoryId(Integer.parseInt(lineData[0]));
             
             /* construct a trajectory */
-            for(int i = 1; i < lineData.length - 1; i = i + pointDimension){
+            for(int i = 1; i < lineData.length; i = i + pointDimension){
             	
             	/* new the item of the trajectory
             	 * Point: pointId, time-stamp */
                 Point point = new Point(pointDimension);
                 
                 for(int j = 0; j < pointDimension; j++)
-                	point.set_coordinate(j, Long.parseLong(lineData[i + j]));
+                	point.set_coordinate(j, Integer.parseInt(lineData[i + j]));
 
                 trajectoryItem.addPointToArray(point);
             }
@@ -460,7 +460,7 @@ public class Util {
 	}
 	
 	/* build the inverted index by reading the inverted-index file */
-	public static void buildInvertedIndex(String invertedIndexFile) 
+	public static void buildInvertedIndex(String invertedIndexFile, int dim) 
 			throws FileNotFoundException {
 		
         FileInputStream inputStreamInvertedIndex = 
@@ -486,14 +486,14 @@ public class Util {
             invertedlistItem.set_invertedlistID(Integer.parseInt(lineData[0]));
             
             /* construct the inverted list */
-            for(int i = 1; i < lineData.length - 1; i = i + 3){
+            for(int i = 1; i < lineData.length; i = i + dim){
             	
             	/* new the item of the inverted list
             	 * Point: trajectoryId, position */
                 Point trajectoryPoint = new Point();
                 
-                trajectoryPoint.set_coordinate(0, Long.parseLong(lineData[i]));
-                trajectoryPoint.set_coordinate(1, Long.parseLong(lineData[i + 1]));
+                trajectoryPoint.set_coordinate(0, Integer.parseInt(lineData[i]));
+                trajectoryPoint.set_coordinate(1, Integer.parseInt(lineData[i + 1]));
                 
                 invertedlistItem.addTrajectoryToArray(trajectoryPoint);
             }
@@ -553,8 +553,8 @@ public class Util {
         int originIndex = 0;
         int destinationIndex = 0;
         
-        long currentOriginId;
-        long currentDestinationId;
+        int currentOriginId;
+        int currentDestinationId;
         
         /* begin to compare the trajectory id in each lists */
         while(originIndex < originLength && destinationIndex < destinationLength){
