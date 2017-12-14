@@ -6,15 +6,19 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Scanner;
 
 public class GraphUpdate {
 	
-	public static ArrayList<ArrayList<Point>> connectedList = new ArrayList<ArrayList<Point>>();
+	// this is the update transition graph, with some of the edges deleted according to the input OD pair.
+	public static ArrayList<ArrayList<Point>> temporaryConnectedList = new ArrayList<ArrayList<Point>>();
+	public static ArrayList<ArrayList<Point>> originConnectedList = new ArrayList<ArrayList<Point>>();
 	public static ArrayList<ArrayList<Point>> invertedConnectedList  = new ArrayList<ArrayList<Point>>();
 //	public static int START = 0;
 //	public static int END = 2000;
 	public static int FILE = 1;
+	public static int LAMDA = 4;
 	
 	static void initList(String fileName, ArrayList<ArrayList<Point>> list) throws FileNotFoundException{
 		
@@ -44,11 +48,12 @@ public class GraphUpdate {
             /* initialize the element list, each list contains a sequence of points*/
             ArrayList<Point> elemList = new ArrayList<Point>();
             
-            for(int i = 1; i < lineData.length; i = i + 2){
+            for(int i = 1; i < lineData.length; i = i + 1){
             	Point item =  new Point();
             	item.set_coordinate(0, Integer.parseInt(lineData[i]));
             	item.set_coordinate(1, Integer.parseInt(lineData[i + 1]));
             	elemList.add(item);
+            	//elemList.add(Integer.parseInt(lineData[i]));
             }
             
             list.add(elemList);
@@ -69,7 +74,7 @@ public class GraphUpdate {
 		int low = 0;
 		
 		while(low <= high){
-			int mid = low + (high - low)/2;
+			int mid = (high + low)/2;
 			
 			if(point < pointlist.get(mid).get_coordinate(0))
 				high = mid - 1;
@@ -99,7 +104,7 @@ public class GraphUpdate {
 		int low = 0;
 		//int position = -1;
 		while(low <= high){
-			int mid = low + (high - low)/2; 
+			int mid =(high + low)/2; 
 			
 			if(point < pointlist.get(mid).get_coordinate(0))
 				high = mid - 1;
@@ -116,7 +121,7 @@ public class GraphUpdate {
 	/* eliminate the redundant edges in the transition graph, 
 	 * which will update the connected list and the inverted connected list*/
 	static void graphReduction(){
-		for(int i = 0; i < connectedList.size(); i++){
+		for(int i = 0; i < originConnectedList.size(); i++){
 			
 			//debug
 			if(i % 1000 == 0)
@@ -130,7 +135,7 @@ public class GraphUpdate {
 			
 			int pCurrent = i;
 //			ArrayList<Point> pCurrentTraList = Util.invertedIndex.get(pCurrent).get_trajectoryArray();
-			ArrayList<Point> outNeighborList = connectedList.get(pCurrent);
+			ArrayList<Point> outNeighborList = originConnectedList.get(pCurrent);
 			ArrayList<Point> inNeighborList = invertedConnectedList.get(pCurrent);
 			
 			for(int j = 0; j < outNeighborList.size(); j++){
@@ -162,7 +167,7 @@ public class GraphUpdate {
 						//System.out.println("numTraIn = " + numTraIn);
 						//debug
 						
-						ArrayList<Point> inNeighborOutList = connectedList.get(pIn);
+						ArrayList<Point> inNeighborOutList = originConnectedList.get(pIn);
 						//Point searchPoint = new Point();
 						//binarySearch(inNeighborOutList, pOut, searchPoint);
 						//System.out.println("search point id = " + searchPoint.coordinate[0]);
@@ -198,8 +203,8 @@ public class GraphUpdate {
 								//System.out.println("This point is sufficient!");
 								//debug
 								
-								int inOutPosition = binarySearchPosition(connectedList.get(pIn), pCurrent);
-								connectedList.get(pIn).remove(inOutPosition);
+								int inOutPosition = binarySearchPosition(originConnectedList.get(pIn), pCurrent);
+								originConnectedList.get(pIn).remove(inOutPosition);
 								invertedConnectedList.get(pCurrent).remove(k);
 								k--;
 							//}
@@ -211,11 +216,48 @@ public class GraphUpdate {
 		}
 	}
 	
+	// update the temporal connected list by eliminate the edges from OD trajectory
+	public static void graphUpdateByODTrajectory(int origin, int destination){
+		// reset the temporary connected list
+		temporaryConnectedList.clear();
+		Collections.copy(temporaryConnectedList, originConnectedList);
+		
+		// get the OD trajectories
+		ArrayList<Trajectory> subTrajectoryList = new ArrayList<Trajectory>();
+		Util.get_SubTrajectorySet(subTrajectoryList, origin, destination);
+		
+		// for each trajectory, delete the edge from the connected list
+		for(int i = 0; i < subTrajectoryList.size(); i++){
+			// get the trajectory
+			Trajectory traj = subTrajectoryList.get(i);
+			for(int j = 0; j < traj.get_pointArray().size(); j++){
+				// get the current point from the trajectory, 
+				// delete the edge connecting all the succeeding points from the trajectory
+				int start = traj.get_pointArray().get(j).get_coordinate(0);
+				for(int k = j + 1; k < traj.get_pointArray().size(); k++){
+					int end = traj.get_pointArray().get(k).get_coordinate(0);
+					int position = binarySearchPosition(temporaryConnectedList.get(start), end);
+					if(position != -1){
+						// get the current value of the edge sum
+						int currentVal = temporaryConnectedList.get(start).get(position).get_coordinate(1);
+						// if the current value of edge sum is smaller than the threshold
+						// delete current connected edge from the connected list
+						if(currentVal <= LAMDA + 1){
+							temporaryConnectedList.get(start).remove(position);
+						}
+						else
+							temporaryConnectedList.get(start).get(position).set_coordinate(1, currentVal - 1);
+					}
+				}
+			}
+		}		
+	}
+	
 	public static void main(String[] args) throws IOException {
 		//generateConnectedList("/home/uqdhe/workspace/TraSpaEst/odpairmatrix", "/home/uqdhe/"
         //		+ "workspace/TraSpaEst/connectedlist");
         		
-        initList("/media/bigdata/uqdhe/"+FILE+"/connectedlist-"+FILE, connectedList);
+        initList("/media/bigdata/uqdhe/"+FILE+"/connectedlist-"+FILE, originConnectedList);
         //initList("./connectedlist", connectedList);
         System.out.println("Finish the building of connected list!");
         initList("/media/bigdata/uqdhe/"+FILE+"/invertedconnectedlist-"+FILE, invertedConnectedList);

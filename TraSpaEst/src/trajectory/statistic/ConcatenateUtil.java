@@ -14,10 +14,10 @@ public class ConcatenateUtil {
 	
 	/* the threshold of number of trajectory between two points */
 	//public static final int NUM_OF_TRAJECTORY = 10;
-	public static ArrayList<ArrayList<Integer>> originConnectedList = new ArrayList<ArrayList<Integer>>();
+	public static ArrayList<ArrayList<Point>> originConnectedList = new ArrayList<ArrayList<Point>>();
 	
 	// this is the update transition graph, with some of the edges deleted according to the input OD pair.
-	public static ArrayList<ArrayList<Integer>> temporaryConnectedList = new ArrayList<ArrayList<Integer>>();
+	public static ArrayList<ArrayList<Point>> temporaryConnectedList = new ArrayList<ArrayList<Point>>();
 	public static ArrayList<EMD.Point> pointList = new ArrayList<EMD.Point>();
 	public static double DIST_RATIO = 1.001;
 	
@@ -40,12 +40,16 @@ public class ConcatenateUtil {
             
             /* split a line into items, store into an array */
             String[] lineData = lineConnectedList.split(SplitBy);
-            ArrayList<Integer> pointList = new ArrayList<Integer>();
+            ArrayList<Point> pointList = new ArrayList<Point>();
             
             /* scan the element of a line */
             for(int columnIndex = 1; columnIndex < lineData.length; columnIndex = columnIndex + 2){           	
             	/* add the point index to the list */
-            	pointList.add(Integer.parseInt(lineData[columnIndex]));
+            	Point item =  new Point();
+            	item.set_coordinate(0, Integer.parseInt(lineData[columnIndex]));
+            	item.set_coordinate(1, Integer.parseInt(lineData[columnIndex + 1]));
+            	pointList.add(item);
+            	//pointList.add(Integer.parseInt(lineData[columnIndex]));
             }
 
             /* add the list to array */
@@ -53,6 +57,8 @@ public class ConcatenateUtil {
         }		
 	}
 	
+	
+	/* Read the road segment file to get the mid point longitude and latitude*/
 	public static void buildPointList(String fileName) 
 			throws FileNotFoundException{
 		FileInputStream inputStreamPointList = new FileInputStream(fileName);
@@ -79,11 +85,63 @@ public class ConcatenateUtil {
         }		
 	}
 	
+	/*Get the concatenation node with k as input*/
 	public static void getPathEnum(int k, int currentPointId, int destinationPointId,
 			ArrayList<Integer> pathEnum, ArrayList<ArrayList<Integer>> result) {
 		
 		/* get the connected list of current point, which stores all the neighbors of it */
-		ArrayList<Integer> neighborList = originConnectedList.get(currentPointId);
+		ArrayList<Integer> neighborList = new ArrayList<Integer>();
+		for(int i = 0; i < originConnectedList.get(currentPointId).size(); i++){
+			neighborList.add(originConnectedList.get(currentPointId).get(i).get_coordinate(0));				
+		}
+		if (k == 0) {
+			if (neighborList.contains(destinationPointId)) {
+				pathEnum.add(destinationPointId);
+				HashSet<Integer> pathSet = new HashSet<Integer>();
+				for(Integer elemSet : pathEnum){
+					pathSet.add(elemSet);
+				}
+				
+				if(pathSet.size() == pathEnum.size()){
+					if(accumulativeSpatialLength(pathEnum.get(0), destinationPointId, pathEnum, DIST_RATIO) && 
+							direction(pathEnum.get(0), destinationPointId, pathEnum))
+						result.add(pathEnum);
+				}
+					
+			}
+			return;
+		}
+		/* start the recursion */
+		for (Integer elem : neighborList) {
+			/* new a new path to add the current point into the path */
+			ArrayList<Integer> newPath = new ArrayList<Integer>(pathEnum);
+			newPath.add(elem);
+			
+			
+			/* check whether there is loop in the permutation */
+			HashSet<Integer> pathSet = new HashSet<Integer>();
+			for(Integer elemSet : newPath){
+				pathSet.add(elemSet);
+			}
+			
+			if(pathSet.size() == newPath.size()){
+				if(accumulativeSpatialLength(pathEnum.get(0), destinationPointId, newPath, DIST_RATIO) && 
+						direction(pathEnum.get(0), destinationPointId, newPath))
+					getPathEnum(k-1, elem, destinationPointId, newPath, result);
+			}
+		
+		}
+	}
+	
+	/*Get the concatenation node with k as input*/
+	public static void getPathEnumWithTempList(int k, int currentPointId, int destinationPointId,
+			ArrayList<Integer> pathEnum, ArrayList<ArrayList<Integer>> result) {
+		
+		/* get the connected list of current point, which stores all the neighbors of it */
+		ArrayList<Integer> neighborList = new ArrayList<Integer>();
+		for(int i = 0; i < temporaryConnectedList.get(currentPointId).size(); i++){
+			neighborList.add(temporaryConnectedList.get(currentPointId).get(i).get_coordinate(0));				
+		}
 		if (k == 0) {
 			if (neighborList.contains(destinationPointId)) {
 				pathEnum.add(destinationPointId);
@@ -127,7 +185,11 @@ public class ConcatenateUtil {
 			ArrayList<Integer> pathEnum, ArrayList<ArrayList<Integer>> result) {
 		
 		/* get the connected list of current point, which stores all the neighbors of it */
-		ArrayList<Integer> neighborList = originConnectedList.get(currentPointId);
+		//ArrayList<Integer> neighborList = originConnectedList.get(currentPointId);
+		ArrayList<Integer> neighborList = new ArrayList<Integer>();
+		for(int i = 0; i < originConnectedList.get(currentPointId).size(); i++){
+			neighborList.add(originConnectedList.get(currentPointId).get(i).get_coordinate(0));				
+		}
 		if (k == 0) {
 			if (neighborList.contains(destinationPointId)) {
 				pathEnum.add(destinationPointId);
@@ -267,7 +329,7 @@ public class ConcatenateUtil {
 	
 	public static void main(String[] args) throws IOException {
 		FileInputStream inputStreamTrajectoryList;
-		originConnectedList = new ArrayList<>();
+		ArrayList<ArrayList<Integer>> connectedList = new ArrayList<>();
 		try {
 			inputStreamTrajectoryList = new FileInputStream("/media/dragon_data/uqdhe/"
 	        		+ "BeijingFiveDays/mydata/connectedlistod");
@@ -290,7 +352,7 @@ public class ConcatenateUtil {
 	            	int i = Integer.parseInt(s);
 	            	list.add(i);
 	            }
-	            originConnectedList.add(list);
+	            connectedList.add(list);
 	        }
 	        
 	        int start=382787;

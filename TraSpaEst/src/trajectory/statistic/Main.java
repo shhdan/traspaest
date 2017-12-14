@@ -73,7 +73,7 @@ public class Main {
 		for(int iteration = 0; iteration < fileset.length; iteration++){
 			FILE_NUM = fileset[iteration];
 			
-        Util.connectedList = new ArrayList<ArrayList<Integer>> ();
+        Util.connectedList = new ArrayList<ArrayList<Point>> ();
         Util.buildConnectedList(FILE_PATH2
       		+FILE_NUM+ "/connectedlist-new-" +FILE_NUM);
         ConcatenateUtil.originConnectedList = Util.connectedList;

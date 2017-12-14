@@ -39,7 +39,7 @@ public class Trajectory {
 		this.pointArray = pointArray;
     }
     
-    /* get sub-trajectory by starting and ending index */
+    /* get sub-trajectory by starting and ending index , the ending index point is included*/
     public ArrayList<Point> get_subTrajectory(int start, int end){
     	ArrayList<Point> subTrajectory = new ArrayList<Point>();
     	

@@ -24,7 +24,7 @@ public class Util {
     public static final int PATH_RANDOM = 1000;
     public static ArrayList<Trajectory> trajectoryList = new ArrayList<Trajectory>();
     public static ArrayList<InvertedList> invertedIndex = new ArrayList<InvertedList>();
-	public static ArrayList<ArrayList<Integer>> connectedList = new ArrayList<ArrayList<Integer>>();
+	public static ArrayList<ArrayList<Point>> connectedList = new ArrayList<ArrayList<Point>>();
 	
 	/* calculate the distance between the od trajectories set and the clipping trajectory set */
 	public static double calculateClipHist(int originPoint, int destinationPoint, String option){
@@ -626,12 +626,16 @@ public class Util {
             
             /* split a line into items, store into an array */
             String[] lineData = lineConnectedList.split(SplitBy);
-            ArrayList<Integer> pointList = new ArrayList<Integer>();
+            ArrayList<Point> pointList = new ArrayList<Point>();
             
             /* scan the element of a line */
-            for(int columnIndex = 1; columnIndex < lineData.length; columnIndex++){           	
+            for(int columnIndex = 1; columnIndex < lineData.length; columnIndex = columnIndex + 2){           	
             	/* add the point index to the list */
-            	pointList.add(Integer.parseInt(lineData[columnIndex]));
+            	Point item =  new Point();
+            	item.set_coordinate(0, Integer.parseInt(lineData[columnIndex]));
+            	item.set_coordinate(1, Integer.parseInt(lineData[columnIndex + 1]));
+            	pointList.add(item);
+            	//pointList.add(Integer.parseInt(lineData[columnIndex]));
             }
 
             /* add the list to array */
@@ -643,7 +647,11 @@ public class Util {
 			ArrayList<Integer> pathEnum, ArrayList<ArrayList<Integer>> result) {
 		
 		/* get the connected list of current point, which stores all the neighbors of it */
-		ArrayList<Integer> neighborList = connectedList.get(currentPointId);
+		//ArrayList<Integer> neighborList = connectedList.get(currentPointId);
+		ArrayList<Integer> neighborList = new ArrayList<Integer>();
+		for(int i = 0; i < connectedList.get(currentPointId).size(); i++){
+			neighborList.add(connectedList.get(currentPointId).get(i).get_coordinate(0));				
+		}
 		if (k == 0) {
 			if (neighborList.contains(destinationPointId)) {
 				pathEnum.add(destinationPointId);
