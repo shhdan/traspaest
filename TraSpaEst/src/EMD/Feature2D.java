@@ -43,7 +43,8 @@ public class Feature2D implements Feature {
         this.y = y;
     }
     
-    
+    public final static double MAX_SPATIAL_DISTANCE = 10;
+    public final static double MAX_TEMPORAL_DISTANCE = 600;
     public double groundDist(Feature f) {
         Feature2D f2d = (Feature2D)f;
 //        double deltaX = x - f2d.x;
@@ -52,8 +53,17 @@ public class Feature2D implements Feature {
         //the real distance on the earth with longitude and latitude
         if(orderTag == true){
             double spatialDist = calculateDistanceInKilometer(x,y,f2d.x,f2d.y);
+            if(spatialDist > MAX_SPATIAL_DISTANCE)
+            	spatialDist = 1;
+            else
+            	spatialDist = spatialDist / MAX_SPATIAL_DISTANCE;
             //double spatialDist = FastEMD.distancematrix[(int)x][(int)f2d.x];
-            return weight * spatialDist + (1 - weight) * Math.abs(avgOrder - f2d.avgOrder);
+            double order = Math.abs(avgOrder - f2d.avgOrder);
+            if(order > MAX_TEMPORAL_DISTANCE)
+            	order = 1;
+            else
+            	order = order / MAX_TEMPORAL_DISTANCE;
+            return weight * spatialDist + (1 - weight) * order;
         }
         
         return calculateDistanceInKilometer(x, y, f2d.x, f2d.y);

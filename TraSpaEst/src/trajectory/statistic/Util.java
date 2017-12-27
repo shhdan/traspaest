@@ -470,8 +470,14 @@ public class Util {
 		Scanner scInvertedIndex = new Scanner(inputStreamInvertedIndex, "UTF-8");
         String lineInvertedIndex = "";
         String SplitBy = ",";
+        int line = 0;
         
         while (scInvertedIndex.hasNextLine()) {
+        	
+        	if(line % 10000 == 0)
+        		System.out.println("Finish Line " + line);
+        	
+        	line++;
         	
         	/* scan a line */
             lineInvertedIndex = scInvertedIndex.nextLine();
@@ -619,7 +625,14 @@ public class Util {
         String lineConnectedList = "";
         String SplitBy = ",";
         
+        int line = 0;
+        
         while (scConnectedList.hasNextLine()) {
+        	
+        	if(line % 10000 == 0)
+        		System.out.println("Finish Line " + line);
+        	
+        	line++;
         	
         	/* scan a line */
             lineConnectedList = scConnectedList.nextLine();

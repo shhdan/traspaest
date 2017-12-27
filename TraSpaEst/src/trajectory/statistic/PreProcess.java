@@ -304,6 +304,7 @@ public static void  generateBothConnectedList(String inputFile, String outputFil
         String SplitBy = ",";
         long totalDegree = 0;
         int lineIndex = 0;
+        int lineWithItem = 0;
         long maxDegree = 0;
         int numNode = 0;
         
@@ -321,6 +322,8 @@ public static void  generateBothConnectedList(String inputFile, String outputFil
             /* split a line into items, store into an array */
             String[] lineData = lineConnectedList.split(SplitBy);
             int degree = (lineData.length - 1)/2;
+            if(lineData.length > 1)
+            	lineWithItem++;
             
             if(degree > maxDegree)
             	maxDegree = degree;
@@ -334,6 +337,7 @@ public static void  generateBothConnectedList(String inputFile, String outputFil
         System.out.println("totalDegree = " + totalDegree);
         System.out.println("maxDegree = " + maxDegree);
         System.out.println("numNode = " + numNode);
+        System.out.println("lineWithItem = " + lineWithItem);
         
         averageDegree = totalDegree/numNode;
         System.out.println("AverageDegree = " + averageDegree);

@@ -1,8 +1,8 @@
 package trajectory.statistic;
 
-import rtree.IndexablePoint;
+//import rtree.IndexablePoint;
 
-public class Point extends IndexablePoint{
+public class Point{
 
 	private int nDimensions; 	// the number of dimensions of a point
 	int[] coordinate;	    // the coordinate of a point

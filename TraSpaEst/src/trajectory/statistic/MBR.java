@@ -10,8 +10,16 @@ public class MBR {
     
     MBR(){}
     
-    // extend the region of MBR from given point
-    void unionWith(double x, double y){
+    
+    //extend the region of MBR from given point
+    void unionWithPoint(Point point){
+    	minx = MIN(minx, point.get_coordinate(0));
+    	maxx = MAX(maxx, point.get_coordinate(0));
+    	miny = MIN(miny, point.get_coordinate(1));
+    	maxy = MAX(maxy, point.get_coordinate(1));
+    }
+    // extend the region of MBR from given coordinates
+    void unionWithCoordinates(double x, double y){
         
         /****************** debug ******************/
 //        System.out.print("X = " + x + "\n");
